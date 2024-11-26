@@ -1,0 +1,82 @@
+create database escola
+
+create table pessoa (
+    id_pessoa serial primary key,
+    nome varchar(100),
+    endereco varchar(255),
+    telefone varchar(20),
+    email varchar(100),
+    grau_instrucao varchar(50)
+);
+
+
+create table aluno (
+    id_aluno serial primary key,
+    id_pessoa int references pessoa (id_pessoa) on delete cascade, 
+    data_nascimento date
+);
+
+create table instrutor (
+    id_instrutor serial primary key,
+    id_pessoa int references pessoa (id_pessoa) on delete cascade,
+    salario_base decimal(10, 2)
+);
+
+create table curso (
+    id_curso serial primary key,
+    id_aluno int references aluno (id_aluno) on delete cascade,  
+    nome varchar(100),
+    valor decimal(10, 2),
+    carga_horaria int
+);
+
+create table avaliacao (
+    id_avaliacao serial primary key,
+    id_aluno int references aluno (id_aluno) on delete cascade,  
+    nota decimal(5, 2),
+    frequencia decimal(5, 2)
+);
+
+insert into pessoa (id_pessoa, nome, endereco, telefone, email, grau_instrucao) values
+(1, 'Gabriella Santana', 'R. Medeiros de Albuquerque', '(55)83977778888', 'gabriella.santana@gmail.com', 'Ensino Superior'),
+(2, 'Wuldson Franco', 'R. São Paulo, 100', '(55)83998887766', 'wuldson.franco@email.com', 'Mestre');
+
+insert into aluno (id_pessoa, data_nascimento) values
+(1, '2006-05-12');
+
+insert into instrutor (id_pessoa, salario_base) values
+(2, 5000.00);
+
+insert into curso (id_aluno, nome, valor, carga_horaria) values
+(1, 'Curso de Programação em Python', 500.00, 40);
+
+insert into avaliacao (id_aluno, nota, frequencia) values
+(1, 8.5, 90.0);
+
+select * from pessoa;
+select * from instrutor;
+select * from curso;
+select * from avaliacao;
+
+SELECT 
+    p.nome AS pessoa_nome,
+    p.endereco AS pessoa_endereco,
+    p.telefone AS pessoa_telefone,
+    p.email AS pessoa_email,
+    p.grau_instrucao AS pessoa_grau_instrucao,
+    i.salario_base AS instrutor_salario_base, 
+    c.nome AS curso_nome,  
+    c.valor AS curso_valor, 
+    c.carga_horaria AS curso_carga_horaria,  
+    a1.nota AS avaliacao_nota, 
+    a1.frequencia AS avaliacao_frequencia  
+FROM 
+    pessoa p
+LEFT JOIN 
+    instrutor i ON p.id_pessoa = i.id_pessoa  
+LEFT JOIN 
+    aluno a2 ON p.id_pessoa = a2.id_pessoa  
+LEFT JOIN 
+    curso c ON a2.id_aluno = c.id_aluno  
+LEFT JOIN 
+    avaliacao a1 ON a2.id_aluno = a1.id_aluno;
